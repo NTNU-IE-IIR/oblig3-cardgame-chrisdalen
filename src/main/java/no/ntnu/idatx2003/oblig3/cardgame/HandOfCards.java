@@ -45,37 +45,14 @@ public class HandOfCards {
   }
 
   /**
-   * Checks the hand for a straight. A straight is when 5 or more cards on the hand have consecutive
-   * face values, e.g., A, 2, 3, 4, 5 or 10, J, Q, K, A.
-   *
-   * @return {@code true} if the hand has a straight, {@code false} otherwise.
+   * Sums the face values of the cards in the hand.
    */
-  public boolean hasStraight() {
-    boolean hasStraight = false;
-
-    int[] faceValues = new int[14];
+  public int sumOfFaceValues() {
+    int sum = 0;
     for (PlayingCard card : this.hand) {
-      faceValues[card.getFace()]++;
+      sum += card.getFace();
     }
-
-    int count = 0;
-    for (int i = 1; i < faceValues.length; i++) {
-      if (faceValues[i] > 0) {
-        count++;
-        if (count >= 5) {
-          hasStraight = true; // Straight found
-        }
-      } else {
-        count = 0; // Reset count when a gap is encountered
-      }
-    }
-
-    // Check for the special case of A, 2, 3, 4, 5
-    if (count == 4 && faceValues[1] > 0) {
-      hasStraight = true; // Straight found
-    }
-
-    return hasStraight;
+    return sum;
   }
 
 
