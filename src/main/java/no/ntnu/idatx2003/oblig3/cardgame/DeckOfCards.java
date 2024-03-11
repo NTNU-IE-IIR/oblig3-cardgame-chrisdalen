@@ -2,15 +2,17 @@ package no.ntnu.idatx2003.oblig3.cardgame;
 
 import java.util.ArrayList;
 import java.util.Random;
-import no.ntnu.idatx2003.oblig3.cardgame.PlayingCard;
 
+/**
+ * Represents a deck of cards with 52 playing cards.
+ */
 public class DeckOfCards {
 
   private ArrayList<PlayingCard> deck;
   private Random randomAmount = new Random();
 
   /**
-   * Constructs a new no.ntnu.idatx2003.oblig3.cardgame.DeckOfCards complete with 52 playing cards.
+   * Constructs a new DeckOfCards complete with 52 playing cards.
    */
   public DeckOfCards() {
     this.deck = new ArrayList<PlayingCard>();
@@ -20,7 +22,6 @@ public class DeckOfCards {
       }
     }
   }
-
 
   /**
    * Picks n amount of cards from the deck and adds them to the hand.
@@ -49,6 +50,8 @@ public class DeckOfCards {
     }
     return hand;
   }
+
+
 
 }
 
