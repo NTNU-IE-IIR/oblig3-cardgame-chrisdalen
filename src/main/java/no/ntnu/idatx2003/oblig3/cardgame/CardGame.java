@@ -9,6 +9,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -22,9 +23,11 @@ import javafx.stage.Stage;
  * Represents the GUI for the card game.
  */
 public class CardGame extends Application {
-  private HandOfCards hand;
   private Iterator<PlayingCard> handIterator;
   private CardGameController controller;
+  private FlowPane cardsContainer;
+  private TextField flushField;
+  private TextField sumField;
 
   /**
    * Constructs a new CardGame.
@@ -42,15 +45,19 @@ public class CardGame extends Application {
 
     BorderPane rootPane = new BorderPane();
 
-    FlowPane cardsContainer = this.setUpCardContainer();
-    VBox userChoices = this.setUpUserChoices();
-    HBox textBoxes = this.setUpTextBoxes();
+    //Sets up all the components of the main window.
+    VBox userChoices = this.setUpUserButtons();
+    VBox textBoxes = this.setUpTextBoxes();
 
+    //Initializes empty container for the cards.
+    this.cardsContainer = new FlowPane();
+
+    //Adds the components to the main window.
     rootPane.setCenter(cardsContainer);
     rootPane.setRight(userChoices);
     rootPane.setBottom(textBoxes);
 
-    //Displays the main window.
+    //Adds all components to the stage and displays it.
     Scene scene = new Scene(rootPane, 800, 600);
     stage.setScene(scene);
     stage.setTitle("Card Game");
@@ -58,55 +65,74 @@ public class CardGame extends Application {
   }
 
   /**
-   * Sets up the card container for the main window.
-   *
-   * @return A FlowPane containing the cards. If the hand has not been dealt, an empty FlowPane is
-   *          returned.
-   */
-  private FlowPane setUpCardContainer() {
-    FlowPane cardsContainer = new FlowPane();
-
-    //Sets spacing and alignment for the cards.
-    cardsContainer.setHgap(10);
-    cardsContainer.setVgap(10);
-    cardsContainer.setAlignment(Pos.CENTER);
-
-    return cardsContainer;
-  }
-
-  /**
    * Sets up the buttons for the user to interact with, and returns them in a VBox.
    *
    * @return A VBox containing the buttons.
    */
-  private VBox setUpUserChoices() {
-    VBox userChoices = new VBox();
+  private VBox setUpUserButtons() {
+    VBox userButtons = new VBox();
 
     Button newHand = new Button("Deal new hand");
-    newHand.setOnAction(event -> this.controller.executeDealNewHand());
+    newHand.setOnAction(event -> {
+      try {
+        this.controller.executeDealNewHand();
+      } catch (Exception e) {
+        System.out.println(e.getMessage()); //Should be changed to display in the GUI.
+      }
+    });
 
     Button checkHand = new Button("Check hand");
-    checkHand.setOnAction(event -> this.controller.executeCheckHand());
+    checkHand.setOnAction(event -> {
+      try {
+        this.controller.executeCheckHand();
+      } catch (Exception e) {
+        System.out.println(e.getMessage()); //Should be changed to display in the GUI.
+      }
+    });
 
-    userChoices.getChildren().addAll(newHand, checkHand);
+    userButtons.getChildren().addAll(newHand, checkHand);
 
-    return userChoices;
+    return userButtons;
   }
 
   /**
    * Sets up the text fields which provides information to the user about their hand.
    *
-   * @return A HBox containing the text fields and labels.
+   * @return A VBox containing the text fields and labels.
    */
-  private HBox setUpTextBoxes() {
-    HBox textBoxes = new HBox();
+  private VBox setUpTextBoxes() {
+    VBox textBoxes = new VBox();
+    HBox flushBox = new HBox();
+    HBox sumBox = new HBox();
 
-    Label flushLabel = new Label(); //TODO: Make labels update when executeCheckHand is called.
-    Label sumLabel = new Label();
+    Label flushLabel = new Label("Flush: ");
+    Label sumLabel = new Label("Sum of faces: ");
 
-    textBoxes.getChildren().addAll(flushLabel, sumLabel);
+    this.flushField = new TextField();
+    this.sumField = new TextField();
+    //Sets the text fields to be uneditable.
+    flushField.setEditable(false);
+    sumField.setEditable(false);
+
+    flushBox.getChildren().addAll(flushLabel, flushField);
+    sumBox.getChildren().addAll(sumLabel, sumField);
+    textBoxes.getChildren().addAll(flushBox, sumBox);
 
     return textBoxes;
+  }
+
+  /**
+   * Updates the text boxes when a hand is checked.
+   */
+  public void updateTextBoxes(boolean hasFlush, int sum) {
+    try {
+      flushField.setText(Boolean.toString(hasFlush));
+      sumField.setText(Integer.toString(sum));
+    } catch (Exception e) {
+      System.out.println(e.getMessage()); //TODO: Idk about this, it should never actually happen.
+    }
+
+
   }
 
   /**
@@ -127,7 +153,7 @@ public class CardGame extends Application {
     try {
       parsedInput = Integer.parseInt(result.get());
     } catch (NumberFormatException e) {
-      System.out.println("Invalid input. Please enter a number."); //TODO: Not sout but a proper error message.
+      System.out.println("Invalid input. Please enter a number."); //Should be changed to display in the GUI.
     }
     return parsedInput;
   }
@@ -136,22 +162,29 @@ public class CardGame extends Application {
    * Updates the view after a new hand of cards is dealt.
    */
   public void updateCardsView() {
-    FlowPane cardsContainer = this.setUpCardContainer();
     this.handIterator = this.controller.getHandIterator();
+    this.cardsContainer.getChildren().clear();
+
+    cardsContainer.setHgap(10);
+    cardsContainer.setVgap(10);
+    cardsContainer.setAlignment(Pos.CENTER);
 
     while (this.handIterator.hasNext()) {
-      //Code by ChatGPT to display images in JavaFX:
+
       PlayingCard card = this.handIterator.next();
-      String imageName = card.getAsString() + ".png";
-      Path imagePath = Path.of("resources", imageName);
+      String imageName = card.getAsString();
+      String imagePath = imageName + ".png";
 
       try {
-        Image cardImage = new Image(Files.newInputStream(imagePath));
+        Image cardImage = new Image(imagePath);
         ImageView imageView = new ImageView(cardImage);
+        imageView.setFitHeight(200);
+        imageView.setFitWidth(150);
         cardsContainer.getChildren().add(imageView);
-        //End of code by ChatGPT
+
       } catch (Exception e) {
-        System.out.println("Could not load image: " + imageName); //TODO: Handle appropriately
+        System.out.println("Could not load image: " + imageName); //Should be changed to display in the GUI.
+        System.out.println("Exception message: " + e.getMessage());
       }
     }
   }

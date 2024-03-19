@@ -39,6 +39,15 @@ public class CardGameController {
     if (this.hand == null) {
       throw new IllegalArgumentException("No cards have been dealt yet.");
     }
+    if (this.hand.getAmountOfCards() < 5) {
+      throw new IllegalArgumentException("You must have 5 or more cards to check for a flush.");
+    }
+    //Checks the hand for a flush.
+    boolean hasFlush = this.hand.hasFlush();
+    //Sums the face values of the cards in the hand.
+    int sum = this.hand.sumOfFaceValues();
+    //Updates the view with the results.
+    this.game.updateTextBoxes(hasFlush, sum);
   }
 
   /**

@@ -28,16 +28,16 @@ public class DeckOfCards {
    * The cards are pulled at random from the deck. No card may be picked more than once.
    *
    * @param n the amount of cards to pick.
-   *          Must be a number between 5 and 52 (including both values).
+   *          Must be a number between 1 and 52 (including both values).
    * @return the hand of cards.
-   * @throws IllegalArgumentException if n is not a number between 5 and 52.
+   * @throws IllegalArgumentException if n is not a number between 1 and 52.
    */
   public ArrayList<PlayingCard> dealHand(int n) {
     //Initialize the hand
     ArrayList<PlayingCard> hand = new ArrayList<PlayingCard>();
 
-    if (n < 5 || n > 52) {
-      throw new IllegalArgumentException("Parameter n must be a number between 5 and 52");
+    if (n < 1 || n > 52) {
+      throw new IllegalArgumentException("Parameter n must be a number between 1 and 52");
     }
 
     for (int i = 0; i < n; i++) {

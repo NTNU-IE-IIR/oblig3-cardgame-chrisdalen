@@ -55,6 +55,12 @@ public class HandOfCards {
     return sum;
   }
 
+  /**
+   * Returns the amount of cards in the hand.
+   */
+  public int getAmountOfCards() {
+    return this.hand.size();
+  }
 
   /**
    * Returns an iterator over the hand of cards.
@@ -64,10 +70,5 @@ public class HandOfCards {
   public Iterator<PlayingCard> getIterator() {
     return this.hand.iterator();
   }
-
-
-
-
-
 
 }
